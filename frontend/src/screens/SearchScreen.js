@@ -152,7 +152,7 @@ export default function SearchScreen(props) {
               {products.length === 0 && (
                 <MessageBox>No Product Found</MessageBox>
               )}
-              <div className="row center">
+              <div className="product-grid">
                 {products.map((product) => (
                   <Product key={product._id} product={product}></Product>
                 ))}

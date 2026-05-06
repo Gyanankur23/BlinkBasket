@@ -143,7 +143,7 @@ orderRouter.put(
           .messages()
           .send(
             {
-              from: 'Amazona <amazona@mg.yourdomain.com>',
+              from: 'BlinkBasket <blinkbasket@mg.yourdomain.com>',
               to: `${order.user.name} <${order.user.email}>`,
               subject: `New order ${order._id}`,
               html: payOrderEmailTemplate(order),

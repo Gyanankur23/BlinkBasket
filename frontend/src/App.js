@@ -31,6 +31,12 @@ import MapScreen from './screens/MapScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import SupportScreen from './screens/SupportScreen';
 import ChatBox from './components/ChatBox';
+import AIFAQ from './components/AIFAQ';
+import DealsScreen from './screens/DealsScreen';
+import CustomerServiceScreen from './screens/CustomerServiceScreen';
+import RegistryScreen from './screens/RegistryScreen';
+import GiftCardsScreen from './screens/GiftCardsScreen';
+import SellScreen from './screens/SellScreen';
 
 function App() {
   const cart = useSelector((state) => state.cart);
@@ -56,7 +62,7 @@ function App() {
     <BrowserRouter>
       <div className="grid-container">
         <header className="row">
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
             <button
               type="button"
               className="open-sidebar"
@@ -64,31 +70,48 @@ function App() {
             >
               <i className="fa fa-bars"></i>
             </button>
-            <Link className="brand" to="/">
-              amazona
+            <Link className="brand" to="/" style={{ display: 'flex', alignItems: 'center' }}>
+              <svg width="32" height="32" viewBox="0 0 40 40" style={{ marginRight: '0.8rem', flexShrink: 0 }} xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#febd69" />
+                    <stop offset="100%" stopColor="#f3a847" />
+                  </linearGradient>
+                </defs>
+                <rect width="40" height="40" rx="8" fill="url(#logo-grad)" />
+                <path d="M12 10H22C25.3137 10 28 12.6863 28 16C28 18.2359 26.7758 20.1873 24.9666 21.2185C27.3248 22.3789 29 24.7865 29 27.5C29 31.0899 26.0899 34 22.5 34H12V10ZM17 19H21C22.6569 19 24 17.6569 24 16C24 14.3431 22.6569 13 21 13H17V19ZM17 31H22C23.6569 31 25 29.6569 25 28C25 26.3431 23.6569 25 22 25H17V31Z" fill="#131921"/>
+                <circle cx="21" cy="16" r="1.5" fill="#febd69" />
+              </svg>
+              BlinkBasket
             </Link>
           </div>
-          <div>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
             <SearchBox />
           </div>
-          <div>
+          <div className="nav-links">
             <Link to="/cart">
-              Cart
-              {cartItems.length > 0 && (
-                <span className="badge">{cartItems.length}</span>
-              )}
+              <i className="fa fa-shopping-cart" style={{ fontSize: '2rem' }}></i>
+              <span style={{ position: 'relative' }}>
+                {cartItems.length > 0 && (
+                  <span className="badge" style={{ position: 'absolute', top: '-1.5rem', right: '-0.5rem' }}>
+                    {cartItems.length}
+                  </span>
+                )}
+              </span>
+              <small>Cart</small>
             </Link>
             {userInfo ? (
               <div className="dropdown">
                 <Link to="#">
-                  {userInfo.name} <i className="fa fa-caret-down"></i>{' '}
+                  <small>Hello, {userInfo.name.split(' ')[0]}</small>
+                  <strong>Account <i className="fa fa-caret-down"></i></strong>
                 </Link>
                 <ul className="dropdown-content">
                   <li>
-                    <Link to="/profile">User Profile</Link>
+                    <Link to="/profile">Your Profile</Link>
                   </li>
                   <li>
-                    <Link to="/orderhistory">Order History</Link>
+                    <Link to="/orderhistory">Your Orders</Link>
                   </li>
                   <li>
                     <Link to="#signout" onClick={signoutHandler}>
@@ -98,12 +121,16 @@ function App() {
                 </ul>
               </div>
             ) : (
-              <Link to="/signin">Sign In</Link>
+              <Link to="/signin">
+                <small>Hello, Sign in</small>
+                <strong>Account</strong>
+              </Link>
             )}
             {userInfo && userInfo.isSeller && (
               <div className="dropdown">
                 <Link to="#admin">
-                  Seller <i className="fa fa-caret-down"></i>
+                  <small>Seller</small>
+                  <strong>Panel <i className="fa fa-caret-down"></i></strong>
                 </Link>
                 <ul className="dropdown-content">
                   <li>
@@ -118,7 +145,8 @@ function App() {
             {userInfo && userInfo.isAdmin && (
               <div className="dropdown">
                 <Link to="#admin">
-                  Admin <i className="fa fa-caret-down"></i>
+                  <small>Admin</small>
+                  <strong>Panel <i className="fa fa-caret-down"></i></strong>
                 </Link>
                 <ul className="dropdown-content">
                   <li>
@@ -141,6 +169,16 @@ function App() {
             )}
           </div>
         </header>
+        <div className="sub-header">
+          <Link to="/" onClick={() => setSidebarIsOpen(true)}>
+            <i className="fa fa-bars"></i> All
+          </Link>
+          <Link to="/deals">Today's Deals</Link>
+          <Link to="/customer-service">Customer Service</Link>
+          <Link to="/registry">Registry</Link>
+          <Link to="/gift-cards">Gift Cards</Link>
+          <Link to="/sell">Sell</Link>
+        </div>
         <aside className={sidebarIsOpen ? 'open' : ''}>
           <ul className="categories">
             <li>
@@ -309,13 +347,42 @@ function App() {
               }
             />
 
+            <Route path="/deals" element={<DealsScreen />} />
+            <Route path="/customer-service" element={<CustomerServiceScreen />} />
+            <Route path="/registry" element={<RegistryScreen />} />
+            <Route path="/gift-cards" element={<GiftCardsScreen />} />
+            <Route path="/sell" element={<SellScreen />} />
             <Route path="/" element={<HomeScreen />} exact></Route>
           </Routes>
         </main>
         <footer className="row center">
           {userInfo && !userInfo.isAdmin && <ChatBox userInfo={userInfo} />}
-          <div>All right reserved</div>{' '}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', fontSize: '2.4rem', fontWeight: 700 }}>
+              <svg width="40" height="40" viewBox="0 0 40 40" style={{ marginRight: '1rem' }} xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="footer-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#febd69" />
+                    <stop offset="100%" stopColor="#f3a847" />
+                  </linearGradient>
+                </defs>
+                <rect width="40" height="40" rx="8" fill="url(#footer-logo-grad)" />
+                <path d="M12 10H22C25.3137 10 28 12.6863 28 16C28 18.2359 26.7758 20.1873 24.9666 21.2185C27.3248 22.3789 29 24.7865 29 27.5C29 31.0899 26.0899 34 22.5 34H12V10ZM17 19H21C22.6569 19 24 17.6569 24 16C24 14.3431 22.6569 13 21 13H17V19ZM17 31H22C23.6569 31 25 29.6569 25 28C25 26.3431 23.6569 25 22 25H17V31Z" fill="#131921"/>
+                <circle cx="21" cy="16" r="1.5" fill="#febd69" />
+              </svg>
+              BlinkBasket
+            </div>
+            <div style={{ fontSize: '1.2rem', color: '#ccc' }}>
+              © 1996-2024, BlinkBasket.com, Inc. or its affiliates
+            </div>
+            <div style={{ fontSize: '1.2rem', color: '#ccc', display: 'flex', gap: '2rem' }}>
+              <Link to="/" style={{ color: '#ccc' }}>Conditions of Use</Link>
+              <Link to="/" style={{ color: '#ccc' }}>Privacy Notice</Link>
+              <Link to="/" style={{ color: '#ccc' }}>Consumer Health Data Privacy Disclosure</Link>
+            </div>
+          </div>
         </footer>
+        <AIFAQ />
       </div>
     </BrowserRouter>
   );

@@ -69,6 +69,10 @@ export default function PlaceOrderScreen(props) {
                             src={item.image}
                             alt={item.name}
                             className="small"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = `https://placehold.co/400x400/eeeeee/333333?text=${encodeURIComponent(item.name)}`;
+                            }}
                           ></img>
                         </div>
                         <div className="min-30">
@@ -78,7 +82,7 @@ export default function PlaceOrderScreen(props) {
                         </div>
 
                         <div>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                          {item.qty} x ₹{item.price?.toLocaleString('en-IN')} = ₹{(item.qty * item.price).toLocaleString('en-IN')}
                         </div>
                       </div>
                     </li>
@@ -97,19 +101,19 @@ export default function PlaceOrderScreen(props) {
               <li>
                 <div className="row">
                   <div>Items</div>
-                  <div>${cart.itemsPrice.toFixed(2)}</div>
+                  <div>₹{cart.itemsPrice?.toLocaleString('en-IN')}</div>
                 </div>
               </li>
               <li>
                 <div className="row">
                   <div>Shipping</div>
-                  <div>${cart.shippingPrice.toFixed(2)}</div>
+                  <div>₹{cart.shippingPrice?.toLocaleString('en-IN')}</div>
                 </div>
               </li>
               <li>
                 <div className="row">
                   <div>Tax</div>
-                  <div>${cart.taxPrice.toFixed(2)}</div>
+                  <div>₹{cart.taxPrice?.toLocaleString('en-IN')}</div>
                 </div>
               </li>
               <li>
@@ -118,7 +122,7 @@ export default function PlaceOrderScreen(props) {
                     <strong> Order Total</strong>
                   </div>
                   <div>
-                    <strong>${cart.totalPrice.toFixed(2)}</strong>
+                    <strong>₹{cart.totalPrice?.toLocaleString('en-IN')}</strong>
                   </div>
                 </div>
               </li>

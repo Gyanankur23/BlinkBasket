@@ -67,6 +67,10 @@ export default function ProductScreen(props) {
                 className="large"
                 src={product.image}
                 alt={product.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://placehold.co/400x400/eeeeee/333333?text=${encodeURIComponent(product.name)}`;
+                }}
               ></img>
             </div>
             <div className="col-1">
@@ -80,7 +84,17 @@ export default function ProductScreen(props) {
                     numReviews={product.numReviews}
                   ></Rating>
                 </li>
-                <li>Pirce : ${product.price}</li>
+                <li className="product-price">
+                  {product.discountPrice ? (
+                    <>
+                      <span className="discount-price">Price: ₹{product.discountPrice?.toLocaleString('en-IN')}</span>
+                      <span className="original-price">₹{product.price?.toLocaleString('en-IN')}</span>
+                      <span className="discount-badge">{product.discountPercent}% OFF</span>
+                    </>
+                  ) : (
+                    <span className="price">Price: ₹{product.price?.toLocaleString('en-IN')}</span>
+                  )}
+                </li>
                 <li>
                   Description:
                   <p>{product.description}</p>
@@ -93,19 +107,35 @@ export default function ProductScreen(props) {
                   <li>
                     Seller{' '}
                     <h2>
-                      <Link to={`/seller/${product.seller._id}`}>
-                        {product.seller.seller.name}
-                      </Link>
+                      {product.seller && product.seller._id ? (
+                        <Link to={`/seller/${product.seller._id}`}>
+                          {product.seller.seller?.name || product.seller.name || 'BlinkBasket'}
+                        </Link>
+                      ) : (
+                        <span>BlinkBasket</span>
+                      )}
                     </h2>
-                    <Rating
-                      rating={product.seller.seller.rating}
-                      numReviews={product.seller.seller.numReviews}
-                    ></Rating>
+                    {product.seller && product.seller.seller && (
+                      <Rating
+                        rating={product.seller.seller.rating || 0}
+                        numReviews={product.seller.seller.numReviews || 0}
+                      ></Rating>
+                    )}
                   </li>
                   <li>
                     <div className="row">
                       <div>Price</div>
-                      <div className="price">${product.price}</div>
+                      <div className="price-section">
+                        {product.discountPrice ? (
+                          <>
+                            <span className="discount-price">₹{product.discountPrice?.toLocaleString('en-IN')}</span>
+                            <span className="original-price">₹{product.price?.toLocaleString('en-IN')}</span>
+                            <span className="discount-badge">{product.discountPercent}% OFF</span>
+                          </>
+                        ) : (
+                          <span className="price">₹{product.price?.toLocaleString('en-IN')}</span>
+                        )}
+                      </div>
                     </div>
                   </li>
                   <li>

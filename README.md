@@ -1,13 +1,13 @@
-# Amazona ECommerce Website
-![amazona](/template/images/amazona.jpg)
+# BlinkBasket ECommerce Website
+![blinkbasket](/template/images/blinkbasket.jpg)
 
 # React & Node Tutorial - Full ECommerce in 9 Hours [2021]
-Welcome to my React and Node tutorial to build a fully-functional e-commerce website exactly like amazon. Open your code editor and follow me for the next hours to build an e-commerce website using MERN stack (MongoDB, ExpressJS, React and Node.JS).
+Welcome to my React and Node tutorial to build a fully-functional e-commerce website - BlinkBasket. Open your code editor and follow me for the next hours to build an e-commerce website using MERN stack (MongoDB, ExpressJS, React and Node.JS).
 
 ## Demo Website
 
-- 👉 Heroku : [https://react-amazona.herokuapp.com](https://react-amazona.herokuapp.com)
-- 👉 Heroku Mirror: [https://react-amazona-mirror.herokuapp.com](https://react-amazona-mirror.herokuapp.com)
+- 👉 Heroku : [https://react-blinkbasket.herokuapp.com](https://react-blinkbasket.herokuapp.com)
+- 👉 Heroku Mirror: [https://react-blinkbasket-mirror.herokuapp.com](https://react-blinkbasket-mirror.herokuapp.com)
 
 
 ## You Will Learn
@@ -26,7 +26,7 @@ Welcome to my React and Node tutorial to build a fully-functional e-commerce web
 ### 1. Clone repo
 
 ```
-$ git clone git@github.com:basir/amazona.git
+$ git clone git@github.com:basir/blinkbasket.git
 $ cd amazona
 ```
 
@@ -35,7 +35,7 @@ $ cd amazona
 - Local MongoDB
   - Install it from [here](https://www.mongodb.com/try/download/community)
   - Create .env file in root folder
-  - Set MONGODB_URL=mongodb://localhost/amazona  
+  - Set MONGODB_URL=mongodb://localhost/blinkbasket  
 - Atlas Cloud MongoDB
   - Create database at [https://cloud.mongodb.com](https://cloud.mongodb.com)
   - Create .env file in root folder
@@ -71,7 +71,7 @@ $ npm start
 
 ## Support
 
-- Q/A: https://webacademy.pro/amazona
+- Q/A: https://webacademy.pro/blinkbasket
 - Contact Instructor: [Basir](mailto:basir.jafarzadeh@gmail.com)
 
 ## Lessons

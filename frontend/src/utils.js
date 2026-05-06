@@ -5,19 +5,29 @@ export const prices = [
     max: 0,
   },
   {
-    name: `$1 to $10`,
-    min: 1,
-    max: 10,
+    name: `₹0 to ₹500`,
+    min: 0,
+    max: 500,
   },
   {
-    name: `$10 to $100`,
-    min: 10,
-    max: 100,
+    name: `₹500 to ₹2,000`,
+    min: 500,
+    max: 2000,
   },
   {
-    name: `$100 to $1000`,
-    min: 100,
-    max: 1000,
+    name: `₹2,000 to ₹10,000`,
+    min: 2000,
+    max: 10000,
+  },
+  {
+    name: `₹10,000 to ₹50,000`,
+    min: 10000,
+    max: 50000,
+  },
+  {
+    name: `₹50,000+`,
+    min: 50000,
+    max: 1000000,
   },
 ];
 export const ratings = [

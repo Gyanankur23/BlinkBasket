@@ -27,27 +27,41 @@ export default function HomeScreen() {
   }, [dispatch]);
   return (
     <div>
-      <h2>Top Sellers</h2>
-      {loadingSellers ? (
-        <LoadingBox></LoadingBox>
-      ) : errorSellers ? (
-        <MessageBox variant="danger">{errorSellers}</MessageBox>
-      ) : (
-        <>
-          {sellers.length === 0 && <MessageBox>No Seller Found</MessageBox>}
-          <Carousel showArrows autoPlay showThumbs={false}>
-            {sellers.map((seller) => (
-              <div key={seller._id}>
-                <Link to={`/seller/${seller._id}`}>
-                  <img src={seller.seller.logo} alt={seller.seller.name} />
-                  <p className="legend">{seller.seller.name}</p>
-                </Link>
-              </div>
-            ))}
-          </Carousel>
-        </>
-      )}
-      <h2>Featured Products</h2>
+      {/* Amazon-style Hero Banner */}
+      <div className="hero-banner" style={{
+        background: 'linear-gradient(135deg, #232f3e 0%, #131921 100%)',
+        color: 'white',
+        padding: '4rem 2rem',
+        textAlign: 'center',
+        marginBottom: '2rem'
+      }}>
+        <h1 style={{ fontSize: '3.6rem', marginBottom: '1rem', color: 'white' }}>
+          Welcome to BlinkBasket
+        </h1>
+        <p style={{ fontSize: '1.8rem', marginBottom: '2rem', color: '#febd69' }}>
+          The everything store. Shop millions of products with fast delivery.
+        </p>
+        <Link to="/search" style={{
+          display: 'inline-block',
+          background: 'linear-gradient(135deg, #febd69 0%, #f3a847 100%)',
+          color: '#111',
+          padding: '1.2rem 3rem',
+          borderRadius: '3px',
+          fontSize: '1.6rem',
+          fontWeight: 700,
+          textDecoration: 'none'
+        }}>
+          Start Shopping
+        </Link>
+      </div>
+
+      <h2 style={{
+        padding: '0 2rem',
+        fontSize: '2.1rem',
+        fontWeight: 700,
+        color: '#0f1111',
+        marginBottom: '1rem'
+      }}>Featured Products</h2>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -55,7 +69,7 @@ export default function HomeScreen() {
       ) : (
         <>
           {products.length === 0 && <MessageBox>No Product Found</MessageBox>}
-          <div className="row center">
+          <div className="product-grid">
             {products.map((product) => (
               <Product key={product._id} product={product}></Product>
             ))}

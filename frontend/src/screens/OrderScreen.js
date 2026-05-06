@@ -130,6 +130,10 @@ export default function OrderScreen(props) {
                             src={item.image}
                             alt={item.name}
                             className="small"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = `https://placehold.co/400x400/eeeeee/333333?text=${encodeURIComponent(item.name)}`;
+                            }}
                           ></img>
                         </div>
                         <div className="min-30">
@@ -139,7 +143,7 @@ export default function OrderScreen(props) {
                         </div>
 
                         <div>
-                          {item.qty} x ${item.price} = ${item.qty * item.price}
+                          {item.qty} x ₹{item.price?.toLocaleString('en-IN')} = ₹{(item.qty * item.price).toLocaleString('en-IN')}
                         </div>
                       </div>
                     </li>
@@ -158,19 +162,19 @@ export default function OrderScreen(props) {
               <li>
                 <div className="row">
                   <div>Items</div>
-                  <div>${order.itemsPrice.toFixed(2)}</div>
+                  <div>₹{order.itemsPrice?.toLocaleString('en-IN')}</div>
                 </div>
               </li>
               <li>
                 <div className="row">
                   <div>Shipping</div>
-                  <div>${order.shippingPrice.toFixed(2)}</div>
+                  <div>₹{order.shippingPrice?.toLocaleString('en-IN')}</div>
                 </div>
               </li>
               <li>
                 <div className="row">
                   <div>Tax</div>
-                  <div>${order.taxPrice.toFixed(2)}</div>
+                  <div>₹{order.taxPrice?.toLocaleString('en-IN')}</div>
                 </div>
               </li>
               <li>
@@ -179,7 +183,7 @@ export default function OrderScreen(props) {
                     <strong> Order Total</strong>
                   </div>
                   <div>
-                    <strong>${order.totalPrice.toFixed(2)}</strong>
+                    <strong>₹{order.totalPrice?.toLocaleString('en-IN')}</strong>
                   </div>
                 </div>
               </li>

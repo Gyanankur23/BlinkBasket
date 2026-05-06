@@ -4,13 +4,15 @@ import data from '../data.js';
 import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
 import { isAdmin, isAuth, isSellerOrAdmin } from '../utils.js';
+import { seedDatabase } from '../seed.js';
 
 const productRouter = express.Router();
 
 productRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
-    const pageSize = 3;
+    // Boosted limit to 50 for robust, vast showcase
+    const pageSize = 50;
     const page = Number(req.query.pageNumber) || 1;
     const name = req.query.name || '';
     const category = req.query.category || '';
@@ -34,11 +36,11 @@ productRouter.get(
       order === 'lowest'
         ? { price: 1 }
         : order === 'highest'
-        ? { price: -1 }
-        : order === 'toprated'
-        ? { rating: -1 }
-        : { _id: -1 };
-    const count = await Product.count({
+          ? { price: -1 }
+          : order === 'toprated'
+            ? { rating: -1 }
+            : { _id: -1 };
+    const count = await Product.countDocuments({
       ...sellerFilter,
       ...nameFilter,
       ...categoryFilter,
@@ -71,19 +73,14 @@ productRouter.get(
 productRouter.get(
   '/seed',
   expressAsyncHandler(async (req, res) => {
-    // await Product.remove({});
-    const seller = await User.findOne({ isSeller: true });
-    if (seller) {
-      const products = data.products.map((product) => ({
-        ...product,
-        seller: seller._id,
-      }));
-      const createdProducts = await Product.insertMany(products);
-      res.send({ createdProducts });
-    } else {
-      res
-        .status(500)
-        .send({ message: 'No seller found. first run /api/users/seed' });
+    try {
+      const result = await seedDatabase();
+      res.send({ 
+        message: 'Database seeded successfully', 
+        stats: result.stats 
+      });
+    } catch (error) {
+      res.status(500).send({ message: error.message });
     }
   })
 );

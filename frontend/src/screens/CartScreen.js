@@ -43,12 +43,16 @@ export default function CartScreen(props) {
           <ul>
             {cartItems.map((item) => (
               <li key={item.product}>
-                <div className="row">
+                <div className="row cart-item">
                   <div>
                     <img
                       src={item.image}
                       alt={item.name}
                       className="small"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `https://placehold.co/400x400/eeeeee/333333?text=${encodeURIComponent(item.name)}`;
+                      }}
                     ></img>
                   </div>
                   <div className="min-30">
@@ -70,7 +74,7 @@ export default function CartScreen(props) {
                       ))}
                     </select>
                   </div>
-                  <div>${item.price}</div>
+                  <div>₹{item.price?.toLocaleString('en-IN')}</div>
                   <div>
                     <button
                       type="button"
@@ -90,8 +94,8 @@ export default function CartScreen(props) {
           <ul>
             <li>
               <h2>
-                Subtotal ({cartItems.reduce((a, c) => a + c.qty, 0)} items) : $
-                {cartItems.reduce((a, c) => a + c.price * c.qty, 0)}
+                Subtotal ({cartItems.reduce((a, c) => a + c.qty, 0)} items) : ₹
+                {cartItems.reduce((a, c) => a + c.price * c.qty, 0).toLocaleString('en-IN')}
               </h2>
             </li>
             <li>
