@@ -16,16 +16,16 @@ export default function CustomerServiceScreen() {
           </h2>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Track your package</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Track your package</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Return or replace items</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Return or replace items</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>View order details</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>View order details</button>
             </li>
             <li style={{ padding: '0.8rem 0' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Cancel an order</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Cancel an order</button>
             </li>
           </ul>
         </div>
@@ -37,16 +37,16 @@ export default function CustomerServiceScreen() {
           </h2>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Change your password</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Change your password</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Update payment methods</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Update payment methods</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Manage addresses</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Manage addresses</button>
             </li>
             <li style={{ padding: '0.8rem 0' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Account security</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Account security</button>
             </li>
           </ul>
         </div>
@@ -58,16 +58,16 @@ export default function CustomerServiceScreen() {
           </h2>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Payment methods</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Payment methods</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Gift card balance</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Gift card balance</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Promotions & coupons</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Promotions & coupons</button>
             </li>
             <li style={{ padding: '0.8rem 0' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Pricing inquiries</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Pricing inquiries</button>
             </li>
           </ul>
         </div>
@@ -79,16 +79,16 @@ export default function CustomerServiceScreen() {
           </h2>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Contact us</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Contact us</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Chat with us</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Chat with us</button>
             </li>
             <li style={{ padding: '0.8rem 0', borderBottom: '1px solid #eee' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Help Center</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Help Center</button>
             </li>
             <li style={{ padding: '0.8rem 0' }}>
-              <a href="#" style={{ color: '#007185', textDecoration: 'none' }}>Report an issue</a>
+              <button style={{ color: '#007185', textDecoration: 'none', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.4rem' }}>Report an issue</button>
             </li>
           </ul>
         </div>
