@@ -7,7 +7,7 @@ import {
   isAdmin,
   isAuth,
   isSellerOrAdmin,
-  mailgun,
+  getMailgunClient,
   payOrderEmailTemplate,
 } from '../utils.js';
 
@@ -139,25 +139,16 @@ orderRouter.put(
       };
       const updatedOrder = await order.save();
       try {
-        mailgun()
-          .messages()
-          .send(
-            {
-              from: 'BlinkBasket <blinkbasket@mg.yourdomain.com>',
-              to: `${order.user.name} <${order.user.email}>`,
-              subject: `New order ${order._id}`,
-              html: payOrderEmailTemplate(order),
-            },
-            (error, body) => {
-              if (error) {
-                console.log(error);
-              } else {
-                console.log(body);
-              }
-            }
-          );
+        const mg = getMailgunClient();
+        await mg.messages.create(process.env.MAILGUN_DOMAIN || 'mg.yourdomain.com', {
+          from: 'BlinkBasket <blinkbasket@mg.yourdomain.com>',
+          to: `${order.user.name} <${order.user.email}>`,
+          subject: `New order ${order._id}`,
+          html: payOrderEmailTemplate(order),
+        });
+        console.log('Email sent successfully');
       } catch (err) {
-        console.log(err);
+        console.log('Email error:', err);
       }
 
       res.send({ message: 'Order Paid', order: updatedOrder });

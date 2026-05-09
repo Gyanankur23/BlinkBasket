@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
-import mg from 'mailgun-js';
+import formData from 'form-data';
+import Mailgun from 'mailgun.js';
+
+const mailgun = new Mailgun(formData);
 
 export const generateToken = (user) => {
   return jwt.sign(
@@ -59,10 +62,10 @@ export const isSellerOrAdmin = (req, res, next) => {
   }
 };
 
-export const mailgun = () =>
-  mg({
-    apiKey: process.env.MAILGUN_API_KEY,
-    domain: process.env.MAILGUN_DOMIAN,
+export const getMailgunClient = () =>
+  mailgun.client({
+    username: 'api',
+    key: process.env.MAILGUN_API_KEY,
   });
 
 export const payOrderEmailTemplate = (order) => {
@@ -85,7 +88,7 @@ export const payOrderEmailTemplate = (order) => {
     <tr>
     <td>${item.name}</td>
     <td align="center">${item.qty}</td>
-    <td align="right"> $${item.price.toFixed(2)}</td>
+    <td align="right"> ₹${item.price.toFixed(2)}</td>
     </tr>
   `
     )
@@ -94,19 +97,19 @@ export const payOrderEmailTemplate = (order) => {
   <tfoot>
   <tr>
   <td colspan="2">Items Price:</td>
-  <td align="right"> $${order.itemsPrice.toFixed(2)}</td>
+  <td align="right"> ₹${order.itemsPrice.toFixed(2)}</td>
   </tr>
   <tr>
   <td colspan="2">Tax Price:</td>
-  <td align="right"> $${order.taxPrice.toFixed(2)}</td>
+  <td align="right"> ₹${order.taxPrice.toFixed(2)}</td>
   </tr>
   <tr>
   <td colspan="2">Shipping Price:</td>
-  <td align="right"> $${order.shippingPrice.toFixed(2)}</td>
+  <td align="right"> ₹${order.shippingPrice.toFixed(2)}</td>
   </tr>
   <tr>
   <td colspan="2"><strong>Total Price:</strong></td>
-  <td align="right"><strong> $${order.totalPrice.toFixed(2)}</strong></td>
+  <td align="right"><strong> ₹${order.totalPrice.toFixed(2)}</strong></td>
   </tr>
   <tr>
   <td colspan="2">Payment Method:</td>
