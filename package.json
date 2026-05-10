@@ -23,8 +23,6 @@
   "homepage": "https://github.com/basir/blinkbasket#readme",
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.21.2",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
