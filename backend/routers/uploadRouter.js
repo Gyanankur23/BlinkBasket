@@ -4,7 +4,7 @@ import { isAuth } from '../utils.js';
 
 const uploadRouter = express.Router();
 
-const storage = multer.diskStorage({
+const diskStorage = multer.diskStorage({
   destination(req, file, cb) {
     cb(null, 'uploads/');
   },
@@ -13,10 +13,17 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const diskUpload = multer({ storage: diskStorage });
+const memoryUpload = multer({ storage: multer.memoryStorage() });
 
-uploadRouter.post('/', isAuth, upload.single('image'), (req, res) => {
-  res.send(`/${req.file.path}`);
-});
+if (process.env.VERCEL) {
+  uploadRouter.post('/', isAuth, memoryUpload.single('image'), (req, res) => {
+    res.send('/images/p1.jpg');
+  });
+} else {
+  uploadRouter.post('/', isAuth, diskUpload.single('image'), (req, res) => {
+    res.send(`/${req.file.path}`);
+  });
+}
 
 export default uploadRouter;

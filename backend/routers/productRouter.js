@@ -1,17 +1,23 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import data from '../data.js';
-import Product from '../models/productModel.js';
-import User from '../models/userModel.js';
-import { isAdmin, isAuth, isSellerOrAdmin } from '../utils.js';
 import { seedDatabase } from '../seed.js';
+import { isAdmin, isAuth, isSellerOrAdmin } from '../utils.js';
+import {
+  paginate,
+  sortProducts,
+  filterProducts,
+  distinctCategories,
+  findProductById,
+  populateProduct,
+  insertProduct,
+  deleteProductById,
+} from '../store.js';
 
 const productRouter = express.Router();
 
 productRouter.get(
   '/',
   expressAsyncHandler(async (req, res) => {
-    // Boosted limit to 50 for robust, vast showcase
     const pageSize = 50;
     const page = Number(req.query.pageNumber) || 1;
     const name = req.query.name || '';
@@ -27,46 +33,25 @@ productRouter.get(
         ? Number(req.query.rating)
         : 0;
 
-    const nameFilter = name ? { name: { $regex: name, $options: 'i' } } : {};
-    const sellerFilter = seller ? { seller } : {};
-    const categoryFilter = category ? { category } : {};
-    const priceFilter = min && max ? { price: { $gte: min, $lte: max } } : {};
-    const ratingFilter = rating ? { rating: { $gte: rating } } : {};
-    const sortOrder =
-      order === 'lowest'
-        ? { price: 1 }
-        : order === 'highest'
-          ? { price: -1 }
-          : order === 'toprated'
-            ? { rating: -1 }
-            : { _id: -1 };
-    const count = await Product.countDocuments({
-      ...sellerFilter,
-      ...nameFilter,
-      ...categoryFilter,
-      ...priceFilter,
-      ...ratingFilter,
+    let list = filterProducts({
+      name: name || undefined,
+      category: category || undefined,
+      seller: seller || undefined,
+      min: min && max ? min : undefined,
+      max: min && max ? max : undefined,
+      rating: rating || undefined,
     });
-    const products = await Product.find({
-      ...sellerFilter,
-      ...nameFilter,
-      ...categoryFilter,
-      ...priceFilter,
-      ...ratingFilter,
-    })
-      .populate('seller', 'seller.name seller.logo')
-      .sort(sortOrder)
-      .skip(pageSize * (page - 1))
-      .limit(pageSize);
-    res.send({ products, page, pages: Math.ceil(count / pageSize) });
+    list = sortProducts(list, order);
+    const count = list.length;
+    const pageItems = paginate(list, page, pageSize).map((p) => populateProduct(p));
+    res.send({ products: pageItems, page, pages: Math.ceil(count / pageSize) });
   })
 );
 
 productRouter.get(
   '/categories',
   expressAsyncHandler(async (req, res) => {
-    const categories = await Product.find().distinct('category');
-    res.send(categories);
+    res.send(distinctCategories());
   })
 );
 
@@ -74,10 +59,10 @@ productRouter.get(
   '/seed',
   expressAsyncHandler(async (req, res) => {
     try {
-      const result = await seedDatabase();
-      res.send({ 
-        message: 'Database seeded successfully', 
-        stats: result.stats 
+      const result = seedDatabase();
+      res.send({
+        message: 'Database seeded successfully',
+        stats: result.stats,
       });
     } catch (error) {
       res.status(500).send({ message: error.message });
@@ -88,12 +73,9 @@ productRouter.get(
 productRouter.get(
   '/:id',
   expressAsyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id).populate(
-      'seller',
-      'seller.name seller.logo seller.rating seller.numReviews'
-    );
+    const product = findProductById(req.params.id);
     if (product) {
-      res.send(product);
+      res.send(populateProduct(product));
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }
@@ -105,7 +87,7 @@ productRouter.post(
   isAuth,
   isSellerOrAdmin,
   expressAsyncHandler(async (req, res) => {
-    const product = new Product({
+    const createdProduct = insertProduct({
       name: 'sample name ' + Date.now(),
       seller: req.user._id,
       image: '/images/p1.jpg',
@@ -117,17 +99,16 @@ productRouter.post(
       numReviews: 0,
       description: 'sample description',
     });
-    const createdProduct = await product.save();
-    res.send({ message: 'Product Created', product: createdProduct });
+    res.send({ message: 'Product Created', product: populateProduct(createdProduct) });
   })
 );
+
 productRouter.put(
   '/:id',
   isAuth,
   isSellerOrAdmin,
   expressAsyncHandler(async (req, res) => {
-    const productId = req.params.id;
-    const product = await Product.findById(productId);
+    const product = findProductById(req.params.id);
     if (product) {
       product.name = req.body.name;
       product.price = req.body.price;
@@ -136,8 +117,8 @@ productRouter.put(
       product.brand = req.body.brand;
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
-      const updatedProduct = await product.save();
-      res.send({ message: 'Product Updated', product: updatedProduct });
+      product.updatedAt = new Date().toISOString();
+      res.send({ message: 'Product Updated', product: populateProduct(product) });
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }
@@ -149,10 +130,9 @@ productRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-    if (product) {
-      const deleteProduct = await product.remove();
-      res.send({ message: 'Product Deleted', product: deleteProduct });
+    const deleteProduct = deleteProductById(req.params.id);
+    if (deleteProduct) {
+      res.send({ message: 'Product Deleted', product: populateProduct(deleteProduct) });
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }
@@ -164,7 +144,7 @@ productRouter.post(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
-    const product = await Product.findById(productId);
+    const product = findProductById(productId);
     if (product) {
       if (product.reviews.find((x) => x.name === req.user.name)) {
         return res
@@ -181,10 +161,10 @@ productRouter.post(
       product.rating =
         product.reviews.reduce((a, c) => c.rating + a, 0) /
         product.reviews.length;
-      const updatedProduct = await product.save();
+      product.updatedAt = new Date().toISOString();
       res.status(201).send({
         message: 'Review Created',
-        review: updatedProduct.reviews[updatedProduct.reviews.length - 1],
+        review: product.reviews[product.reviews.length - 1],
       });
     } else {
       res.status(404).send({ message: 'Product Not Found' });

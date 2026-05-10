@@ -1,8 +1,5 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
-import Order from '../models/orderModel.js';
-import User from '../models/userModel.js';
-import Product from '../models/productModel.js';
 import {
   isAdmin,
   isAuth,
@@ -10,19 +7,35 @@ import {
   getMailgunClient,
   payOrderEmailTemplate,
 } from '../utils.js';
+import {
+  aggregateOrderSummary,
+  findOrderById,
+  findOrdersForUser,
+  insertOrder,
+  deleteOrderById,
+  updateOrderById,
+  listOrdersSellerFilter,
+  findUserById,
+} from '../store.js';
 
 const orderRouter = express.Router();
+
+const orderWithUserName = (order) => {
+  const user = order.user ? findUserById(order.user) : null;
+  return {
+    ...order,
+    user: user ? { _id: user._id, name: user.name, email: user.email } : null,
+  };
+};
+
 orderRouter.get(
   '/',
   isAuth,
   isSellerOrAdmin,
   expressAsyncHandler(async (req, res) => {
     const seller = req.query.seller || '';
-    const sellerFilter = seller ? { seller } : {};
-
-    const orders = await Order.find({ ...sellerFilter }).populate(
-      'user',
-      'name'
+    const orders = listOrdersSellerFilter(seller).map((o) =>
+      orderWithUserName(o)
     );
     res.send(orders);
   })
@@ -33,42 +46,7 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.aggregate([
-      {
-        $group: {
-          _id: null,
-          numOrders: { $sum: 1 },
-          totalSales: { $sum: '$totalPrice' },
-        },
-      },
-    ]);
-    const users = await User.aggregate([
-      {
-        $group: {
-          _id: null,
-          numUsers: { $sum: 1 },
-        },
-      },
-    ]);
-    const dailyOrders = await Order.aggregate([
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          orders: { $sum: 1 },
-          sales: { $sum: '$totalPrice' },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-    const productCategories = await Product.aggregate([
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-    res.send({ users, orders, dailyOrders, productCategories });
+    res.send(aggregateOrderSummary());
   })
 );
 
@@ -76,7 +54,7 @@ orderRouter.get(
   '/mine',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id });
+    const orders = findOrdersForUser(req.user._id);
     res.send(orders);
   })
 );
@@ -88,18 +66,20 @@ orderRouter.post(
     if (req.body.orderItems.length === 0) {
       res.status(400).send({ message: 'Cart is empty' });
     } else {
-      const order = new Order({
+      const createdOrder = insertOrder({
         seller: req.body.orderItems[0].seller,
         orderItems: req.body.orderItems,
         shippingAddress: req.body.shippingAddress,
         paymentMethod: req.body.paymentMethod,
+        paymentResult: undefined,
         itemsPrice: req.body.itemsPrice,
         shippingPrice: req.body.shippingPrice,
         taxPrice: req.body.taxPrice,
         totalPrice: req.body.totalPrice,
         user: req.user._id,
+        isPaid: false,
+        isDelivered: false,
       });
-      const createdOrder = await order.save();
       res
         .status(201)
         .send({ message: 'New Order Created', order: createdOrder });
@@ -111,7 +91,7 @@ orderRouter.get(
   '/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    const order = findOrderById(req.params.id);
     if (order) {
       res.send(order);
     } else {
@@ -124,29 +104,41 @@ orderRouter.put(
   '/:id/pay',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id).populate(
-      'user',
-      'email name'
-    );
+    const order = findOrderById(req.params.id);
     if (order) {
-      order.isPaid = true;
-      order.paidAt = Date.now();
-      order.paymentResult = {
-        id: req.body.id,
-        status: req.body.status,
-        update_time: req.body.update_time,
-        email_address: req.body.email_address,
-      };
-      const updatedOrder = await order.save();
+      updateOrderById(req.params.id, (o) => {
+        o.isPaid = true;
+        o.paidAt = Date.now();
+        o.paymentResult = {
+          id: req.body.id,
+          status: req.body.status,
+          update_time: req.body.update_time,
+          email_address: req.body.email_address,
+        };
+      });
+      const updatedOrder = findOrderById(req.params.id);
+      const user = updatedOrder?.user ? findUserById(updatedOrder.user) : null;
       try {
-        const mg = getMailgunClient();
-        await mg.messages.create(process.env.MAILGUN_DOMAIN || 'mg.yourdomain.com', {
-          from: 'BlinkBasket <blinkbasket@mg.yourdomain.com>',
-          to: `${order.user.name} <${order.user.email}>`,
-          subject: `New order ${order._id}`,
-          html: payOrderEmailTemplate(order),
-        });
-        console.log('Email sent successfully');
+        if (
+          user &&
+          process.env.MAILGUN_API_KEY &&
+          process.env.MAILGUN_DOMAIN
+        ) {
+          const mg = getMailgunClient();
+          await mg.messages.create(
+            process.env.MAILGUN_DOMAIN || 'mg.yourdomain.com',
+            {
+              from: 'BlinkBasket <blinkbasket@mg.yourdomain.com>',
+              to: `${user.name} <${user.email}>`,
+              subject: `New order ${updatedOrder._id}`,
+              html: payOrderEmailTemplate({
+                ...updatedOrder,
+                user,
+              }),
+            }
+          );
+          console.log('Email sent successfully');
+        }
       } catch (err) {
         console.log('Email error:', err);
       }
@@ -163,10 +155,9 @@ orderRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    const order = deleteOrderById(req.params.id);
     if (order) {
-      const deleteOrder = await order.remove();
-      res.send({ message: 'Order Deleted', order: deleteOrder });
+      res.send({ message: 'Order Deleted', order });
     } else {
       res.status(404).send({ message: 'Order Not Found' });
     }
@@ -178,13 +169,12 @@ orderRouter.put(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
-    if (order) {
-      order.isDelivered = true;
-      order.deliveredAt = Date.now();
-
-      const updatedOrder = await order.save();
-      res.send({ message: 'Order Delivered', order: updatedOrder });
+    const updated = updateOrderById(req.params.id, (o) => {
+      o.isDelivered = true;
+      o.deliveredAt = Date.now();
+    });
+    if (updated) {
+      res.send({ message: 'Order Delivered', order: updated });
     } else {
       res.status(404).send({ message: 'Order Not Found' });
     }
